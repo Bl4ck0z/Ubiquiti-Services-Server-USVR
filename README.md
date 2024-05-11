@@ -1,5 +1,5 @@
 # SISTEMA OPERATIVO - Ubuntu Server 22.04.4
-## NETPLAN CONFIG
+# NETPLAN CONFIG
 ```markdown
 network:
   version: 2
