@@ -1,19 +1,24 @@
 # SISTEMA OPERATIVO - Ubuntu Server 22.04.4
 # NETPLAN CONFIG
+# NETPLAN CONFIG
 ```bash
+black@USVR:~$ sudo netplan generate
+black@USVR:~$ cd /etc/netplan/
+black@USVR:/etc/netplan$ sudo nano 00-installer-config.yaml
+
 network:
   version: 2
   ethernets:
     eth0:  # NOMBRE DE LA INTERFAZ ETHERNET
       dhcp4: no  # DESHABILITAR DHCP PARA IPv4
-      addresses:  # DIRECCIONES IP ESTÁTICAS ASIGNADAS A eth0
-        - 192.168.0.x/24
-        - 192.168.1.x/24
-      gateway4: 192.168.0.1  # PUERTA DE ENLACE IPv4 POR DEFECTO
-      nameservers:  # CONFIGURACIÓN DE SERVIDORES DNS
+      addresses: # DIRECCIONES IP ESTÁTICAS ASIGNADAS A eth0
+        - 10.0.0.20/24
+        - 192.168.15.20/24
+      gateway4: 10.0.0.1  # PUERTA DE ENLACE IPv4 POR DEFECTO
+      nameservers: # CONFIGURACIÓN DE SERVIDORES DNS
         addresses:  # DIRECCIONES IP DE SERVIDORES DNS
-          - 8.8.8.8  # DNS de Google
-          - 192.168.0.1  # Servidor DNS local
+          - 1.1.1.1  # DNS de Google
+          - 10.0.0.1 # Servidor DNS local
 ```
 ---
 # INSTALACIÓN DE DOCKER ENGINE
