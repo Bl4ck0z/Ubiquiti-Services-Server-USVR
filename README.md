@@ -1,6 +1,6 @@
 # SISTEMA OPERATIVO - Ubuntu Server 22.04.4
 # NETPLAN CONFIG
-```markdown
+```bash
 network:
   version: 2
   ethernets:
@@ -18,60 +18,60 @@ network:
 ---
 # INSTALACIÓN DE DOCKER ENGINE
 ACTUALIZAR EL ÍNDICE DE PAQUETES
-```markdown
+```bash
 sudo apt-get update
 ```
 INSTALAR HERRAMIENTAS NECESARIAS
-```markdown
+```bash
 sudo apt-get install ca-certificates curl
 ```
 CREAR EL DIRECTORIO PARA LAS CLAVES GPG
-```markdown
+```bash
 sudo install -m 0755 -d /etc/apt/keyrings
 ```
 DESCARGAR LA CLAVE GPG OFICIAL DE DOCKER
-```markdown
+```bash
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 ```
 ESTABLECER PERMISOS PARA LA CLAVE
-```markdown
+```bash
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 ```
 AGREGAR EL REPOSITORIO DE DOCKER AL SISTEMA
-```markdown
+```bash
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 ACTUALIZAR EL ÍNDICE DE PAQUETES NUEVAMENTE
-```markdown
+```bash
 sudo apt-get update
 ```
 INSTALAR LOS PAQUETES DE DOCKER
-```markdown
+```bash
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin
 ```
 ---
 # INSTALACIÓN DE DOCKER ENGINE
 CREAR EL GRUPO DOCKER.
-```markdown
+```bash
 sudo groupadd docker
 ```
 AÑADIR TU USUARIO AL GRUPO DOCKER
-```markdown
+```bash
 sudo usermod -aG docker $USER
 ```
 CERRAR SESIÓN Y VOLVER A INICIAR SESIÓN PARA APLICAR LOS CAMBIOS
 
 TAMBIÉN PUEDES EJECUTAR:
-```markdown
+```bash
 sudo newgrp docker
 ```
 ---
 # INSTALAR PORTAINER AGENT EN DOCKER
 EJECUTAR EL COMANDO PARA DESPLEGAR EL AGENTE PORTAINER
-```markdown
+```bash
 docker run -d 
 -p 9001:9001 --name portainer_agent --restart=always \
 -v /var/run/docker.sock:/var/run/docker.sock \
@@ -81,7 +81,7 @@ portainer/agent:latest
 ---
 # UBIQUITI UISP REVERSE PROXY EN DOCKER
 DESCARGAR E INSTALAR UISP CON CONFIGURACIÓN PARA REVERSE PROXY
-```markdown
+```bash
 curl -fsSL https://uisp.ui.com/install > /tmp/uisp_inst.sh && sudo bash /tmp/uisp_inst.sh --public-https-port 443 --http-port 7080 --https-port 7443
 ```
 ---
@@ -89,45 +89,45 @@ curl -fsSL https://uisp.ui.com/install > /tmp/uisp_inst.sh && sudo bash /tmp/uis
 CREAR DIRECTORIOS NECESARIOS PARA LOS CONTENEDORES
 
 ACCEDER AL DIRECTORIO PRINCIPAL
-```markdown
+```bash
 black@USVR:~$ cd /srv
 ```
 CREAR EL DIRECTORIO PRINCIPAL PARA LOS CONTENEDORES
-```markdown
+```bash
 black@USVR:/srv$ sudo mkdir USVR-Docker
 ```
 INGRESAR AL DIRECTORIO USVR-Docker
-```markdown
+```bash
 black@USVR:/srv$ cd USVR-Docker
 ```
 CREAR EL DIRECTORIO PARA unifi-db
-```markdown
+```bash
 black@USVR:/srv/USVR-Docker$ sudo mkdir unifi-db
 ```
 CREAR EL DIRECTORIO PARA Unifi-Server
-```markdown
+```bash
 black@USVR:/srv/USVR-Docker$ sudo mkdir Unifi-Server
 ```
 MOVERSE DE DIRECTORIO unifi-db
-```markdown
+```bash
 black@USVR:/srv/USVR-Docker$ cd unifi-db
 ```
 USAR NANO PARA CREAR Y EDITAR EL ARCHIVO init-mongo.js
-```markdown
+```bash
 black@USVR:/srv/USVR-Docker/unifi-db$ sudo nano init-mongo.js
 ```
 EN EL ARCHIVO init-mongo.js INGRESA LA SIGUIENTE CONFIGURACIÓN
-```markdown
+```bash
 db.getSiblingDB("unifi").createUser({user: "unifi", pwd: "mSufJpHZH", roles: [{role: "dbOwner", db: "unifi"}]});
 db.getSiblingDB("unifi_stat").createUser({user: "unifi", pwd: "mSufJpHZH", roles: [{role: "dbOwner", db: "unifi_stat"}]});
 ```
 VERIFICA QUE LA CONFIGURACIÓN SEA CORRECTA
-```markdown
+```bash
 black@USVR:/srv/USVR-Docker/unifi-db$ cat init-mongo.js
 ```
 ---
 # DOCKER COMPOSE FILE PARA LOS CONTENEDORES
-```markdown
+```bash
 version: "3" # VERSIÓN DEL ARCHIVO DOCKER COMPOSE
 
 services: # DEFINE LOS SERVICIOS A EJECUTAR
