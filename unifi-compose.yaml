@@ -1,0 +1,37 @@
+version: "3" # VERSIÓN DEL ARCHIVO DOCKER COMPOSE
+
+services: # DEFINE LOS SERVICIOS A EJECUTAR
+
+  unifi-network-application: # NOMBRE DEL SERVICIO
+    image: lscr.io/linuxserver/unifi-network-application:latest # IMAGEN A UTILIZAR
+    container_name: unifi-network-application # NOMBRE PARA EL CONTENEDOR
+    environment: # VARIABLES DE ENTORNO
+      - PUID=1000 # ID DE USUARIO
+      - PGID=1000 # ID DE GRUPO
+      - TZ=America/Santo_Domingo # ZONA HORARIA
+      - MONGO_USER=unifi # USUARIO
+      - MONGO_PASS=mSufJpHZH # CONTRASEÑA
+      - MONGO_HOST=unifi-db # HOST
+      - MONGO_PORT=27017 # PUERTO
+      - MONGO_DBNAME=unifi # NOMBRE DE LA BASE DE DATOS
+      - MEM_LIMIT=1024 # LIMITE DE MEMORIA
+      - MEM_STARTUP=1024 # MEMORIA ASIGNADA AL INICIAR
+    volumes: # VOLUMENES A MONTAR
+      - /srv/USVR-Docker/Unifi-Server/data:/config # MAPEO DE DIRECTORIO DEL HOST AL CONTENEDOR
+    ports: # PUERTOS A UTILIZAR
+      - 8443:8443 # HTTPS
+      - 8080:8080 # HTTP
+      - 3478:3478/udp # SERVICIO STUN
+      - 10001:10001/udp # DESCUBRIMIENTO DE UNIFI AP
+      - 1900:1900/udp # DLNA
+      - 6789:6789 # PRUEBA DE VELOCIDAD MÓVIL
+      - 5514:5514/udp # PUERTO ADICIONAL
+    restart: unless-stopped # POLÍTICA DE REINICIO
+
+  unifi-db: # NOMBRE DEL SERVICIO
+    image: docker.io/mongo:4.4 # IMAGEN A UTILIZAR
+    container_name: unifi-db # NOMBRE PARA EL CONTENEDOR
+    volumes: # VOLUMENES A MONTAR
+      - /srv/USVR-Docker/unifi-db/data:/data/db # PERSISTENCIA DE DATOS
+      - /srv/USVR-Docker/unifi-db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro # INICIALIZACIÓN
+    restart: unless-stopped # POLITICA DE REINICIO
