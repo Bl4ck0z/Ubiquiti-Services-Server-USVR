@@ -3,7 +3,9 @@
 # NETPLAN CONFIG
 ```bash
 black@USVR:~$ sudo netplan generate
+
 black@USVR:~$ cd /etc/netplan/
+
 black@USVR:/etc/netplan$ sudo nano 00-installer-config.yaml
 
 network:
@@ -22,40 +24,25 @@ network:
 ```
 ---
 # INSTALACIÓN DE DOCKER ENGINE
-ACTUALIZAR EL ÍNDICE DE PAQUETES
 ```bash
-sudo apt-get update
-```
-INSTALAR HERRAMIENTAS NECESARIAS
-```bash
-sudo apt-get install ca-certificates curl
-```
-CREAR EL DIRECTORIO PARA LAS CLAVES GPG
-```bash
-sudo install -m 0755 -d /etc/apt/keyrings
-```
-DESCARGAR LA CLAVE GPG OFICIAL DE DOCKER
-```bash
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-```
-ESTABLECER PERMISOS PARA LA CLAVE
-```bash
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-```
-AGREGAR EL REPOSITORIO DE DOCKER AL SISTEMA
-```bash
-echo \
+black@USVR:~$ sudo apt-get update
+
+black@USVR:~$ sudo apt-get install ca-certificates curl
+
+black@USVR:~$ sudo install -m 0755 -d /etc/apt/keyrings
+
+black@USVR:~$ sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+black@USVR:~$ sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+black@USVR:~$ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-ACTUALIZAR EL ÍNDICE DE PAQUETES NUEVAMENTE
-```bash
-sudo apt-get update
-```
-INSTALAR LOS PAQUETES DE DOCKER
-```bash
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+
+black@USVR:~$ sudo apt-get update
+
+black@USVR:~$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin
 ```
 ---
 # INSTALACIÓN DE DOCKER ENGINE
