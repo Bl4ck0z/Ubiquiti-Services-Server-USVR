@@ -13,7 +13,7 @@ network:
     eth0:  # NOMBRE DE LA INTERFAZ ETHERNET
       dhcp4: no  # DESHABILITAR DHCP PARA IPv4
       addresses: # DIRECCIONES IP ESTÁTICAS ASIGNADAS A eth0
-        - 10.0.0.20/24
+        - 10.10.10.20/24
         - 192.168.99.20/24
       gateway4: 10.10.10.1  # PUERTA DE ENLACE IPv4 POR DEFECTO
       nameservers: # CONFIGURACIÓN DE SERVIDORES DNS
