@@ -260,5 +260,3 @@ services: # DEFINE LOS SERVICIOS A EJECUTAR
 ```bash
 docker compose up
 ```
-
----
