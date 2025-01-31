@@ -268,3 +268,31 @@ services:
 ```bash
 docker compose up
 ```
+
+## Configuración del Servidor UniFi en Docker
+
+### 1. Configurar el Inform Host en UniFi
+- Accede a la interfaz web de UniFi.
+- Dirígete a **Settings** > **System** > **Advanced**.
+- En el campo **Inform Host**, ingresa la IP de tu servidor Docker, por ejemplo, `10.0.0.133`.
+- Marca la opción **Override** para permitir que los dispositivos se conecten al controlador.
+
+### 2. Asegurar la Comunicación entre Dispositivos
+- Tu servidor DNS y DHCP en `10.0.0.251` debe ser capaz de resolver y asignar direcciones IP a los dispositivos en la red.
+- Verifica que los dispositivos puedan acceder a la IP de tu servidor Docker `10.0.0.133`.
+
+### 3. Configurar DHCP Gateway en UniFi
+Si usas un Security Gateway y los dispositivos no obtienen una dirección IP, configura el **DHCP Gateway IP**:
+- Ve a **Settings** > **Networks**.
+- Selecciona la red correspondiente.
+- Asegúrate de que la **DHCP Gateway IP** esté configurada con `10.0.0.251` (servidor DHCP).
+
+### 4. Verificar Puertos Necesarios
+- Asegúrate de que el puerto **8080** esté accesible para la comunicación entre dispositivos y UniFi. Este puerto es esencial para la adopción de dispositivos.
+- Si es necesario cambiar el puerto, también modifica la configuración de `system.properties` en UniFi y asegúrate de que coincidan los puertos en el contenedor Docker.
+
+### 5. Adopción Manual de Dispositivos
+Si es necesario adoptar un dispositivo manualmente:
+1. Conéctate al dispositivo (p. ej., un punto de acceso) a través de SSH:
+   ```bash
+   ssh ubnt@<AP-IP>
