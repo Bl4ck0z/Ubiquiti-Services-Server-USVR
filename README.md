@@ -167,42 +167,41 @@ La instalación de Unifi Network Application en Docker puede ser un proceso algo
 CREAR DIRECTORIOS NECESARIOS PARA LOS CONTENEDORES
 
 ```bash
-sudo cd /srv
-```
-
-```bash
-sudo mkdir docker_data
-```
-
-```bash
-sudo cd docker_data
-```
-
-```bash
-sudo mkdir Unifi-Server
-```
-
-```bash
-sudo mkdir unifi-db
-```
-
-```bash
-sudo cd unifi-db
+mkdir -p /opt/ufs/data
+mkdir -p /opt/ufdb/data/db
 ```
 
 CREAR Y EDITAR EL ARCHIVO init-mongo.js
 
 ```bash
-sudo nano init-mongo.js
+cd /opt/ufdb/
+sudo nano init-mongo.sh
 ```
 
 ```bash
-db.getSiblingDB("unifi").createUser({user: "unifi", pwd: "mSufJpHZH", roles: [{role: "dbOwner", db: "unifi"}]});
-db.getSiblingDB("unifi_stat").createUser({user: "unifi", pwd: "mSufJpHZH", roles: [{role: "dbOwner", db: "unifi_stat"}]});
+#!/bin/bash
+
+if which mongosh > /dev/null 2>&1; then
+  mongo_init_bin='mongosh'
+else
+  mongo_init_bin='mongo'
+fi
+"${mongo_init_bin}" <<EOF
+use ${MONGO_AUTHSOURCE}
+db.auth("${MONGO_INITDB_ROOT_USERNAME}", "${MONGO_INITDB_ROOT_PASSWORD}")
+db.createUser({
+  user: "${MONGO_USER}",
+  pwd: "${MONGO_PASS}",
+  roles: [
+    { db: "${MONGO_DBNAME}", role: "dbOwner" },
+    { db: "${MONGO_DBNAME}_stat", role: "dbOwner" }
+  ]
+})
+EOF
 ```
 
 ```bash
-sudo cat init-mongo.js
+sudo cat init-mongo.sh
 ```
 
 ### DOCKER COMPOSE FILE PARA LOS CONTENEDORES
@@ -221,40 +220,49 @@ sudo nano unifi-compose.yaml
 
 ```yaml
 ---
-services: # DEFINE LOS SERVICIOS A EJECUTAR
-  unifi-network-application: # NOMBRE DEL SERVICIO
-    image: lscr.io/linuxserver/unifi-network-application:latest # IMAGEN A UTILIZAR
-    container_name: unifi-network-application # NOMBRE PARA EL CONTENEDOR
-    environment: # VARIABLES DE ENTORNO
-      - PUID=1000 # ID DE USUARIO
-      - PGID=1000 # ID DE GRUPO
-      - TZ=America/Santo_Domingo # ZONA HORARIA
-      - MONGO_USER=unifi # USUARIO
-      - MONGO_PASS=mSufJpHZH # CONTRASEÑA
-      - MONGO_HOST=unifi-db # HOST
-      - MONGO_PORT=27017 # PUERTO
-      - MONGO_DBNAME=unifi # NOMBRE DE LA BASE DE DATOS
-      - MEM_LIMIT=1024 # LIMITE DE MEMORIA
-      - MEM_STARTUP=1024 # MEMORIA ASIGNADA AL INICIAR
-    volumes: # VOLUMENES A MONTAR
-      - /srv/USVR-Docker/Unifi-Server/data:/config # MAPEO DE DIRECTORIO DEL HOST AL CONTENEDOR
-    ports: # PUERTOS A UTILIZAR
-      - 8443:8443 # HTTPS
-      - 8080:8080 # HTTP
-      - 3478:3478/udp # SERVICIO STUN
-      - 10001:10001/udp # DESCUBRIMIENTO DE UNIFI AP
-      - 1900:1900/udp # DLNA
-      - 6789:6789 # PRUEBA DE VELOCIDAD MÓVIL
-      - 5514:5514/udp # PUERTO ADICIONAL
-    restart: unless-stopped # POLÍTICA DE REINICIO
 
-  unifi-db: # NOMBRE DEL SERVICIO
-    image: docker.io/mongo:4.4 # IMAGEN A UTILIZAR
-    container_name: unifi-db # NOMBRE PARA EL CONTENEDOR
-    volumes: # VOLUMENES A MONTAR
-      - /srv/USVR-Docker/unifi-db/data:/data/db # PERSISTENCIA DE DATOS
-      - /srv/USVR-Docker/unifi-db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro # INICIALIZACIÓN
-    restart: unless-stopped # POLITICA DE REINICIO
+services:
+  unifi-network-application:
+    image: lscr.io/linuxserver/unifi-network-application:latest
+    container_name: unifi-network-application
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - MONGO_USER=unifi
+      - MONGO_PASS=mSufJpHZH
+      - MONGO_HOST=unifi-db
+      - MONGO_PORT=27017
+      - MONGO_DBNAME=unifi
+      - MONGO_AUTHSOURCE=admin
+    volumes:
+      - /opt/ufs/data:/config
+    ports:
+      - 8443:8443
+      - 3478:3478/udp
+      - 10001:10001/udp
+      - 8080:8080
+      - 1900:1900/udp
+      - 8843:8843
+      - 8880:8880
+      - 6789:6789
+      - 5514:5514/udp
+    restart: unless-stopped
+
+  unifi-db:
+    image: docker.io/mongo:5.0
+    container_name: unifi-db
+    volumes:
+      - /opt/ufdb/data/db:/data/db
+      - /opt/ufdb/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+      - MONGO_USER=unifi
+      - MONGO_PASS=mSufJpHZH
+      - MONGO_DBNAME=unifi
+      - MONGO_AUTHSOURCE=admin
+    restart: unless-stopped
 ```
 
 ```bash
